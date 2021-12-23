@@ -5,45 +5,14 @@
     <title>Digitalt Bibliotek</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <script type="text/javascript" src="/eel.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="data.js"></script>
     <script src="script.js"></script>
 
 
 </head>
 <body onload="startup()">
-    <!-- Side navigation -->
-    <div class="sidenav">
-
-        <br>
-        <button onclick="search_isbn()">Sök</button>
-        <br> <br> <br>
-
-        <label for="isbn" class="input-label" >ISBN:</label>
-        <input name="isbn" id="isbn" type="text" onclick="this.select()"><br>
-
-        <label for="title" class="input-label">Titel:</label>
-        <input name="title" id="title" type="text"><br>
-
-        <label for="author" class="input-label">Författare:</label>
-        <input name="author" id="author" type="text"><br>
-
-        <label for="id" class="input-label">Libris-id:</label>
-        <input name="id" id="id" type="text"><br>
-
-        <label for="sab" class="input-label">SAB:</label>
-        <input name="sab" id="sab" type="text"><br>
-
-        <label for="shelf" class="input-label">Hylla:</label>
-        <input name="shelf" id="shelf" type="text"><br>
-
-        <label for="subject" class="input-label">Ämnesord:</label>
-        <input name="subject" id="subject" type="text"><br><br>
-
-        <button onclick="add_book()" id="add-btn">Lägg till bok</button>
-        <button onclick="clear_search()">Töm sökfält</button>
-        <br>
-        <div id="add-res"></div>
-    </div>
+   
     <!-- Page content -->
     <div class="main">
         <div class="search" id="search-bar">

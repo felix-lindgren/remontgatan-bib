@@ -30,63 +30,50 @@ async function startup() {
 
     get_books()
 
-    document.getElementById("isbn").addEventListener('keyup',  event =>{
-       var key = event.key;
-       if( key === 'Enter'){
-           search_isbn();
-       }
-    });
-
     document.getElementById('export_btn').addEventListener('click', hide_export,false);
 }
-eel.expose(print_from_py);
-function print_from_py(msg){
-    console.log("From python: ");
-    console.log(msg);
-}
-
 
 async function make_table(t){
     var search_res = document.getElementById("search-res");
-    //console.log(await eel.update_book_count()());
-    search_res.innerText =  'Visar ' + t.length.toString() + ' av ' + await eel.update_book_count()() + ' böcker';
-    book_list.innerHTML = '<tr>' + '<th>' + 'Titel' + '</th>' + '<th>'+'Författare'+'</th>' + '<th>'+'Hylla'+'</th>' + '<th>'+'Övrigt'+'</th>' + '<th>'+'+'+'</th>' + '<th></th>' + '</tr>';
+    search_res.innerText =  'Visar ' + t.length.toString() + ' av ' + books2.length + ' böcker';
+    book_list.innerHTML = '<tr>' + '<th>' + 'Titel' + '</th>' + '<th>'+'Författare'+'</th>' + '<th>'+'Hylla'+'</th>'  + '</tr>';
     console.log("Create table")
-    var start = new Date().getTime();
-    if(timeouts.length > 0){
-        for (var timeout of timeouts){
-            clearTimeout(timeout)
+    var indecies = [1,2,4]
+    for (var i = 0; i < t.length; i++) {
+        var row = document.createElement('tr');
+        for (var j = 0; j < indecies.length; j++) {
+            var cell = document.createElement('td');
+            cell.textContent = t[i][indecies[j]];
+            row.appendChild(cell);
         }
-        timeouts = []
+        book_list.appendChild(row);
     }
-    for (const row of t) {
-        timeouts.push(setTimeout(function(){  create_row(row); }, 10));
-    }
-    var end = new Date().getTime();
-    console.log((end - start)/1000)
 }
 
 
 
 
 async function create_row(r){
+
+    if(r){
     book_list.innerHTML +=
             '<tr id="' +r[4]+'">' +
-                '<td>'+ '<div contenteditable="true" onkeyup="edit_field(this, 2)">' + r[0] +  '</div>' +'</td>' +
-                '<td>'+ '<div contenteditable="true" onkeyup="edit_field(this, 3)">' + r[1] +  '</div>' +'</td>' +
-                '<td>'+ '<div contenteditable="true" onkeyup="edit_field(this, 0)"> ' + r[2] +  '</div>' +'</td>' +
-                '<td>'+ '<div contenteditable="true" onkeyup="edit_field(this, 1)" class="">'+' <span class="tooltiptext">'+r[3]+'</span>' + '</div>' +'</td>' +
-                '<td>'+ '<div> ' + '<a href="http://libris.kb.se/bib/' + r[4]+ '" target="_blank">+</a>' +  '</div>' +'</td>' +
-                '<td>'+ '<button onclick="delete_row(this)">[X]</button>' +'</td>' +
+                '<td>'+ '<div contenteditable="true" onkeyup="edit_field(this, 2)">' + r[1] +  '</div>' +'</td>' +
+                '<td>'+ '<div contenteditable="true" onkeyup="edit_field(this, 3)">' + r[2] +  '</div>' +'</td>' +
+                '<td>'+ '<div contenteditable="true" onkeyup="edit_field(this, 0)"> ' + r[4] +  '</div>' +'</td>' +
+                //'<td>'+ '<div> ' + '<a href="http://libris.kb.se/bib/' + r[3]+ '" target="_blank">+</a>' +  '</div>' +'</td>' +
+                
              '</tr>';
+    }
 }
 
-eel.expose(get_books);
+
 async function get_books(){
-    make_table(await eel.get_pybooks()());
+    console.log(books2);
+    
+    make_table(books2);
 }
 
-eel.expose(search_book);
 async function search_book(){
     var term = document.getElementById("search").value;
     var res;
@@ -95,17 +82,16 @@ async function search_book(){
         return
     } else if(term.indexOf("#") === 0){
         if(term.length > 1){
-            console.log("Search in catagory")
-            var start = new Date().getTime();
-            res = await eel.search_catagory(term.split('#')[1])();
-            var end = new Date().getTime();
-            console.log((end - start)/1000)
+            cut_term = term.split('#')[1]
+            console.log(cut_term);
+            res = filterBooks(cut_term[0], 4);
+            
         } else {
             get_books()
             return
         }
     } else {
-        res = await eel.search_book(term)();
+        res = filterBooks(term, 1);
     }
     if(res === 0){
         make_table([]);
@@ -114,26 +100,17 @@ async function search_book(){
     }
 }
 
-async function edit_field(elem, s) {
-    var id = elem.parentElement.parentElement.id;
-    if (s === 0){
-        await eel.edit_field("shelf", elem.innerText, id)();
-    } else if (s===1){
-        await eel.edit_field("other", elem.innerText, id)();
-    }else if (s===2){
-        await eel.edit_field("title", elem.innerText, id)();
-    }else if (s===3){
-        await eel.edit_field("author", elem.innerText, id)();
-    }
-    //get_books();
-}
-
-async function delete_row(elem){
-    var id = elem.parentElement.parentElement.id;
-    if(confirm("Do you want to delete this row")){
-        await eel.delete_book(id);
-        get_books();
-    }
+const filterBooks = (term, index) => {
+    var res = []
+    books2.forEach(row => {
+        if(index === 4){
+            if(row[index][0] === term[0].toUpperCase()) res.push(row)    
+        } else {
+            if(row[index].includes(term)) res.push(row)    
+        }
+        
+    });
+    return res
 }
 
 async function search_isbn(){

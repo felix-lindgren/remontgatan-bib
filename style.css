@@ -1,21 +1,24 @@
 /* The sidebar menu */
 .sidenav {
-  height: 100%; /* Full-height: remove this if you want "auto" height */
-  width: 25%; /* Set the width of the sidebar */
-  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-  z-index: 1; /* Stay on top */
-  top: 0; /* Stay at the top */
+  height: 100%;
+  /* Full-height: remove this if you want "auto" height */
+  width: 25%;
+  /* Set the width of the sidebar */
+  position: fixed;
+  /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 1;
+  /* Stay on top */
+  top: 0;
+  /* Stay at the top */
   left: 0;
   background-color: rgba(17, 17, 17, 0.71);
-  overflow-x: hidden; /* Disable horizontal scroll */
-
+  overflow-x: hidden;
+  /* Disable horizontal scroll */
 }
 
-/* The navigation menu links */
 .sidenav a {
   padding: 6px 8px 6px 16px;
   text-decoration: none;
-
   font-size: 18px;
   color: #373737;
   display: block;
@@ -36,29 +39,17 @@
   line-height: 18px;
 }
 
-.sidenav button{
+.sidenav button {
   width: 50%;
   margin-left: 25%;
   font-size: 18px;
 }
-#left{
-  width: 25%;
-  margin-left: 10%;
-  font-size: 14px;
-}
 
-#right{
-  width: 25%;
-  margin-left: 0;
-  font-size: 14px;
-}
-
-/* When you mouse over the navigation links, change their color */
 .sidenav a:hover {
   color: #f1f1f1;
 }
 
-.sidenav div{
+.sidenav div {
   background-color: red;
   margin-left: 12.5%;
   width: 75%;
@@ -67,80 +58,86 @@
   text-align: center;
 }
 
+#left {
+  width: 25%;
+  margin-left: 10%;
+  font-size: 14px;
+}
 
-#export_panel{
+#right {
+  width: 25%;
+  margin-left: 0;
+  font-size: 14px;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav
+.sidenav
+#export_panel {
   width: 75%;
   height: 40px;
   margin-top: 40px;
 }
 
-#export_container{
+#export_container {
   margin: 10px 5px 5px 5px;
 }
 
 /* Style page content */
 .main {
-
-  margin-left: 25%; /* Same as the width of the sidebar */
+  margin-left: 0%;
+  /* Same as the width of the sidebar */
   padding: 0px 0px;
   background-color: beige;
   height: 100%;
 }
 
-.search{
+.search {
   padding-top: 5px;
   padding-bottom: 5px;
   padding-left: 5px;
-  width: 75%;
+  width: 100%;
   overflow: hidden;
   position: fixed;
   margin-bottom: 30px;
   top: 0;
   background-color: beige;
-
 }
 
-.search input{
+.search input {
   width: 40%;
 }
 
-html, body{
+html, body {
   margin: 0;
   height: 100%;
   background: beige;
-
 }
 
-html{
+html {
   overflow: hidden;
 }
-body{
+
+body {
   overflow: auto;
 }
 
-th, td{
-
+td, th {
+  text-align: center;
   margin: 0px;
   border: 1px solid #111111;
   background-color: #c1c8b0;
-
 }
 
-td div {
+tr :nth-child(2n) {
+  background-color: #a7ae9a;
+}
+
+table {
   text-align: center;
-
-}
-
-table, td, th{
-  text-align: center;
-}
-
-
-
-table{
   border-spacing: 5px 0;
   padding-top: 30px;
   margin-top: 40px;
   line-height: 1.0;
 }
-
+/*# sourceMappingURL=style.css.map */
