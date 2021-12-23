@@ -106,7 +106,7 @@ const filterBooks = (term, index) => {
         if(index === 4){
             if(row[index][0] === term[0].toUpperCase()) res.push(row)    
         } else {
-            if(row[index].includes(term)) res.push(row)    
+            if(row[index].toUpperCase().includes(term.toUpperCase())) res.push(row)    
         }
         
     });
