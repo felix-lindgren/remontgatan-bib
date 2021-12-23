@@ -123,10 +123,22 @@ body {
 }
 
 td, th {
-  text-align: center;
+  text-align: left;
+  width: 45%;
   margin: 0px;
   border: 1px solid #111111;
   background-color: #c1c8b0;
+  font-size: large;
+}
+
+@media screen and (max-width: 1000) {
+  td, th {
+    font-size: x-large;
+  }
+}
+
+td .shelf, th .shelf {
+  width: 10%;
 }
 
 tr :nth-child(2n) {
@@ -139,5 +151,6 @@ table {
   padding-top: 30px;
   margin-top: 40px;
   line-height: 1.0;
+  width: 100%;
 }
 /*# sourceMappingURL=style.css.map */

@@ -43,6 +43,7 @@ async function make_table(t){
         var row = document.createElement('tr');
         for (var j = 0; j < indecies.length; j++) {
             var cell = document.createElement('td');
+            if(j === 2) cell.classList.add("shelf")
             cell.textContent = t[i][indecies[j]];
             row.appendChild(cell);
         }
