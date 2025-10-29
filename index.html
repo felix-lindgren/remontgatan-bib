@@ -1,43 +1,198 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digitalt Bibliotek</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="data.js"></script>
-    <script src="script.js"></script>
-
-
 </head>
-<body onload="startup()">
-   
-    <!-- Page content -->
-    <div class="main">
-        <div class="search" id="search-bar">
-            Sök <input id="search" oninput="search_book()" type="text"> <span id="search-res"></span>
+<body>
+    <!-- Header with search functionality -->
+    <header class="app-header">
+        <div class="header-content">
+            <h1 class="app-title">Digitalt Bibliotek</h1>
 
-            <button id="export_btn" style="float: right; margin-right: 25px">Exportera</button>
-        </div>
-        <div id="export_panel" hidden>
-            <div id="export_container">
-                <label>Författare:<input class="form-control" id="export_search" type="text" ></label>
-                <button id="export_save" onclick="save_file()">Save text file</button>
+            <div class="search-section">
+                <input type="text" id="search-input" placeholder="Sök: Titel, författare, ISBN..." class="search-field">
+                <button id="search-btn" class="btn btn-primary">Sök</button>
+
+                <input type="text" id="category-input" placeholder="Kategori/SAB-kod" class="search-field category-field">
+                <button id="category-btn" class="btn btn-primary">Kategori</button>
+
+                <button id="show-all-btn" class="btn btn-secondary">Visa alla</button>
+            </div>
+
+            <div class="book-count">
+                <span id="book-count-label">Antal: 0</span>
             </div>
         </div>
+    </header>
 
-        <table id="book-list">
-            <tr onclick="">
-                <th>Titel</th>
-                <th>Författare</th>
-                <th>Hylla</th>
-                <th>Övrigt</th>
-                <th>+</th>
-                <th></th>
+    <!-- Main content area -->
+    <div class="main-container">
+        <!-- Left sidebar - Add book form -->
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <h2 class="sidebar-title">Lägg till bok från Libris</h2>
 
-            </tr>
-        </table>
+                <!-- Libris search section -->
+                <div class="form-group">
+                    <input type="text" id="libris-search" placeholder="Sök på Libris (ISBN, titel, författare...)" class="form-input">
+                    <button id="libris-search-btn" class="btn btn-primary btn-full">Sök Libris</button>
+                </div>
+
+                <!-- Libris results (hidden by default) -->
+                <div id="libris-results-container" class="libris-results-section" style="display: none;">
+                    <label class="results-label">Sökresultat från Libris:</label>
+                    <div id="libris-results" class="libris-results"></div>
+                </div>
+
+                <!-- Book form fields -->
+                <div class="form-group">
+                    <label for="title-input" class="form-label">Titel*</label>
+                    <input type="text" id="title-input" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="author-input" class="form-label">Författare*</label>
+                    <input type="text" id="author-input" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="isbn-input" class="form-label">ISBN</label>
+                    <input type="text" id="isbn-input" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="sab-input" class="form-label">SAB</label>
+                    <input type="text" id="sab-input" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="shelf-input" class="form-label">Hylla</label>
+                    <input type="text" id="shelf-input" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="book-id-input" class="form-label">ID*</label>
+                    <input type="text" id="book-id-input" class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="subject-input" class="form-label">Ämnesord</label>
+                    <input type="text" id="subject-input" class="form-input">
+                </div>
+
+                <button id="add-book-btn" class="btn btn-success btn-full">Lägg till bok</button>
+                <button id="clear-form-btn" class="btn btn-secondary btn-full">Töm formulär</button>
+            </div>
+        </aside>
+
+        <!-- Right content - Book table -->
+        <main class="main-content">
+            <div class="content-card">
+                <div class="table-actions">
+                    <button id="export-btn" class="btn btn-secondary">Exportera böcker</button>
+                </div>
+
+                <div class="table-container">
+                    <table id="books-table" class="books-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 35%;">Titel</th>
+                                <th style="width: 25%;">Författare</th>
+                                <th style="width: 10%;">Hylla</th>
+                                <th style="width: 20%;">Kommentar</th>
+                                <th style="width: 10%;">Åtgärder</th>
+                            </tr>
+                        </thead>
+                        <tbody id="books-tbody">
+                            <!-- Books will be inserted here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <button id="prev-page" class="btn btn-secondary">Föregående</button>
+                    <span id="page-info" class="page-info">Sida 1</span>
+                    <button id="next-page" class="btn btn-secondary">Nästa</button>
+                </div>
+            </div>
+        </main>
     </div>
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Laddar...</p>
+    </div>
+
+    <!-- Notification container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- Edit dialog (hidden by default) -->
+    <div id="edit-dialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog">
+            <h3 class="dialog-title">Redigera bok</h3>
+            <div class="dialog-content">
+                <div class="form-group">
+                    <label for="edit-title" class="form-label">Titel</label>
+                    <input type="text" id="edit-title" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="edit-author" class="form-label">Författare</label>
+                    <input type="text" id="edit-author" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="edit-shelf" class="form-label">Hylla</label>
+                    <input type="text" id="edit-shelf" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="edit-other" class="form-label">Kommentar</label>
+                    <input type="text" id="edit-other" class="form-input">
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button id="save-edit-btn" class="btn btn-success">Spara</button>
+                <button id="cancel-edit-btn" class="btn btn-secondary">Avbryt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete confirmation dialog -->
+    <div id="delete-dialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog dialog-small">
+            <h3 class="dialog-title">Ta bort bok?</h3>
+            <p id="delete-book-info" class="dialog-text"></p>
+            <div class="dialog-actions">
+                <button id="confirm-delete-btn" class="btn btn-danger">Ta bort</button>
+                <button id="cancel-delete-btn" class="btn btn-secondary">Avbryt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export dialog -->
+    <div id="export-dialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog dialog-large">
+            <h3 class="dialog-title">Exportera böcker</h3>
+            <div class="dialog-content">
+                <div class="form-group">
+                    <label for="export-search" class="form-label">Sök författare (*** för alla)</label>
+                    <input type="text" id="export-search" class="form-input" value="***">
+                </div>
+                <div class="form-group">
+                    <label for="export-result" class="form-label">Resultat</label>
+                    <textarea id="export-result" class="form-textarea" rows="20" readonly></textarea>
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <button id="do-export-btn" class="btn btn-primary">Exportera</button>
+                <button id="download-export-btn" class="btn btn-success" style="display: none;">Ladda ner</button>
+                <button id="close-export-btn" class="btn btn-secondary">Stäng</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
