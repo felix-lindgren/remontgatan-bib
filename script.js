@@ -11,7 +11,21 @@ const booksPerPage = 20;
 let currentEditingBookId = null;
 let currentDeletingBookId = null;
 
+
+
 // Utility Functions
+async function apiFetch(url, opts = {}) {
+  return fetch(url, { credentials: 'include', ...opts });
+}
+
+async function ensureAccess() {
+  const r = await fetch(`${API_BASE_URL}/cdn-cgi/access/get-identity`, { credentials: 'include' });
+  if (r.ok) return true;
+  window.location.href =
+    `${API_BASE_URL}/cdn-cgi/access/login?redirect_url=${encodeURIComponent(window.location.href)}`;
+  return false;
+}
+
 function showLoading(message = 'Laddar...') {
     const overlay = document.getElementById('loading-overlay');
     overlay.querySelector('p').textContent = message;
@@ -51,7 +65,7 @@ function hideDialog(dialogId) {
 // API Functions
 async function fetchBooks() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/books?limit=500`);
+        const response = await apiFetch(`${API_BASE_URL}/api/books?limit=500`);
         if (!response.ok) throw new Error('Failed to fetch books');
         const books = await response.json();
         currentBooks = books;
@@ -66,7 +80,7 @@ async function fetchBooks() {
 async function searchBooks(term) {
     try {
         showLoading('Söker...');
-        const response = await fetch(`${API_BASE_URL}/api/books/search?q=${encodeURIComponent(term)}`);
+        const response = await apiFetch(`${API_BASE_URL}/api/books/search?q=${encodeURIComponent(term)}`);
         if (!response.ok) throw new Error('Search failed');
         const books = await response.json();
         currentBooks = books;
@@ -85,7 +99,7 @@ async function searchBooks(term) {
 async function searchByCategory(category) {
     try {
         showLoading('Söker kategori...');
-        const response = await fetch(`${API_BASE_URL}/api/books/category/${encodeURIComponent(category)}`);
+        const response = await apiFetch(`${API_BASE_URL}/api/books/category/${encodeURIComponent(category)}`);
         if (!response.ok) throw new Error('Category search failed');
         const books = await response.json();
         currentBooks = books;
@@ -104,7 +118,7 @@ async function searchByCategory(category) {
 async function addBook(bookData) {
     try {
         showLoading('Lägger till bok...');
-        const response = await fetch(`${API_BASE_URL}/api/books`, {
+        const response = await apiFetch(`${API_BASE_URL}/api/books`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -135,7 +149,7 @@ async function addBook(bookData) {
 async function updateBook(bookId, updates) {
     try {
         showLoading('Uppdaterar bok...');
-        const response = await fetch(`${API_BASE_URL}/api/books/${encodeURIComponent(bookId)}`, {
+        const response = await apiFetch(`${API_BASE_URL}/api/books/${encodeURIComponent(bookId)}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -160,7 +174,7 @@ async function updateBook(bookId, updates) {
 async function deleteBook(bookId) {
     try {
         showLoading('Tar bort bok...');
-        const response = await fetch(`${API_BASE_URL}/api/books/${encodeURIComponent(bookId)}`, {
+        const response = await apiFetch(`${API_BASE_URL}/api/books/${encodeURIComponent(bookId)}`, {
             method: 'DELETE'
         });
 
@@ -181,7 +195,7 @@ async function deleteBook(bookId) {
 async function searchLibris(term) {
     try {
         showLoading('Hämtar från Libris...');
-        const response = await fetch(`${API_BASE_URL}/api/libris/search?q=${encodeURIComponent(term)}`);
+        const response = await apiFetch(`${API_BASE_URL}/api/libris/search?q=${encodeURIComponent(term)}`);
 
         if (response.status === 404) {
             showNotification('Kunde inte hämta bok från Libris', 'error');
@@ -209,7 +223,7 @@ async function searchLibris(term) {
 async function exportBooks(searchTerm = '***') {
     try {
         showLoading('Exporterar...');
-        const response = await fetch(`${API_BASE_URL}/api/books/export?search=${encodeURIComponent(searchTerm)}`);
+        const response = await apiFetch(`${API_BASE_URL}/api/books/export?search=${encodeURIComponent(searchTerm)}`);
         if (!response.ok) throw new Error('Export failed');
         const data = await response.json();
         hideLoading();
@@ -224,7 +238,7 @@ async function exportBooks(searchTerm = '***') {
 
 async function updateBookCount() {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/books/count`);
+        const response = await apiFetch(`${API_BASE_URL}/api/books/count`);
         if (!response.ok) throw new Error('Failed to get count');
         const data = await response.json();
         document.getElementById('book-count-label').textContent = `Antal: ${data.count}`;
@@ -387,7 +401,8 @@ function downloadTextFile(filename, content) {
 }
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await ensureAccess();
     // Initial load
     fetchBooks();
 
