@@ -18,12 +18,16 @@ async function apiFetch(url, opts = {}) {
   return fetch(url, { credentials: 'include', ...opts });
 }
 
+// Call a protected endpoint; if 401 → top-level redirect to CF login
 async function ensureAccess() {
-  const r = await fetch(`${API_BASE_URL}/cdn-cgi/access/get-identity`, { credentials: 'include' });
+  const r = await apiFetch(`${API_BASE_URL}/api/books/count`); // any protected GET
   if (r.ok) return true;
-  window.location.href =
-    `${API_BASE_URL}/cdn-cgi/access/login?redirect_url=${encodeURIComponent(window.location.href)}`;
-  return false;
+  if (r.status === 401) {
+    window.location.href =
+      `${API_BASE_URL}/cdn-cgi/access/login?redirect_url=${encodeURIComponent(window.location.href)}`;
+    return false;
+  }
+  return true; // other errors: let UI handle
 }
 
 function showLoading(message = 'Laddar...') {
