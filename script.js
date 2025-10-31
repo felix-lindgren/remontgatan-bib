@@ -73,6 +73,7 @@ async function fetchBooks() {
         if (!response.ok) throw new Error('Failed to fetch books');
         const books = await response.json();
         currentBooks = books;
+        currentPage = 1; // Reset to first page
         renderBookTable();
         updateBookCount();
     } catch (error) {
@@ -88,6 +89,7 @@ async function searchBooks(term) {
         if (!response.ok) throw new Error('Search failed');
         const books = await response.json();
         currentBooks = books;
+        currentPage = 1; // Reset to first page
         renderBookTable();
         hideLoading();
         if (books.length === 0) {
@@ -107,6 +109,7 @@ async function searchByCategory(category) {
         if (!response.ok) throw new Error('Category search failed');
         const books = await response.json();
         currentBooks = books;
+        currentPage = 1; // Reset to first page
         renderBookTable();
         hideLoading();
         if (books.length === 0) {
