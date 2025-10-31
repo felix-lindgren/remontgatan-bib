@@ -1,8 +1,8 @@
 // Configuration
-/* const API_BASE_URL = window.location.hostname === 'localhost'
+const API_BASE_URL = window.location.hostname === 'localhost'
     ? 'http://localhost:8000'
-    : window.API_BASE_URL || 'http://localhost:8000'; */
-const API_BASE_URL = 'https://api-bibliotek.felix-lindgren.se';
+    : window.API_BASE_URL || 'http://localhost:8000';
+//const API_BASE_URL = 'https://api-bibliotek.felix-lindgren.se';
 // State management
 let currentBooks = [];
 let librisResults = [];
@@ -199,18 +199,89 @@ async function deleteBook(bookId) {
 async function searchLibris(term) {
     try {
         showLoading('Hämtar från Libris...');
-        const response = await apiFetch(`${API_BASE_URL}/api/libris/search?q=${encodeURIComponent(term)}`);
+        const url = "https://api.libris.kb.se/xsearch";
+        const response = await fetch(`${url}?query=${encodeURIComponent(term)}&format=json&format_level=full`);
 
-        if (response.status === 404) {
+        if (!response.ok) {
+            throw new Error('Libris API request failed');
+        }
+
+        const data = await response.json();
+
+        // Get up to 5 results
+        const bookList = data.xsearch.list;
+        const results = [];
+
+        for (let i = 0; i < Math.min(5, bookList.length); i++) {
+            const book = bookList[i];
+            try {
+                const res = {
+                    id: book.identifier.substring(24),
+                    title: book.title
+                };
+
+                // ISBN
+                try {
+                    const isbn = book.isbn;
+                    if (Array.isArray(isbn)) {
+                        res.isbn = isbn.length > 0 ? isbn[0] : "Saknas";
+                    } else {
+                        res.isbn = isbn || "Saknas";
+                    }
+                } catch (e) {
+                    console.log("Saknas ISBN");
+                    res.isbn = "Saknas";
+                }
+
+                // Author
+                let auth = book.creator;
+                if (Array.isArray(auth) && auth.length > 1) {
+                    auth = auth.join(', ');
+                } else if (Array.isArray(auth)) {
+                    auth = auth[0];
+                }
+                res.author = auth;
+
+                // SAB classification
+                let sab = "Saknas";
+                try {
+                    sab = book.classification.sab[0].split(" ")[0];
+                } catch (e) {
+                    console.log("Saknas SAB för " + res.title);
+                }
+                res.sab = sab;
+                res.shelf = sab;
+
+                // Subject
+                let subj = "Saknas";
+                try {
+                    subj = book.subject;
+                    if (Array.isArray(subj)) {
+                        if (subj.length > 1) {
+                            subj = subj.join(" ");
+                        } else {
+                            subj = subj[0];
+                        }
+                    }
+                } catch (e) {
+                    console.log("Saknas ämnesord");
+                }
+                res.subject = subj;
+
+                results.push(res);
+            } catch (e) {
+                console.error(`Error parsing book ${i}:`, e);
+                continue;
+            }
+        }
+
+        if (results.length === 0) {
             showNotification('Kunde inte hämta bok från Libris', 'error');
             librisResults = [];
             hideLoading();
             return null;
         }
 
-        if (!response.ok) throw new Error('Libris search failed');
-
-        const results = await response.json();
         librisResults = results;
         hideLoading();
         showNotification(`${results.length} böcker hämtade från Libris`, 'success');

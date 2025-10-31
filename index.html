@@ -11,13 +11,15 @@
     <header class="app-header">
         <div class="header-content">
             <h1 class="app-title">Digitalt Bibliotek</h1>
-
             <div class="search-section">
                 <input type="text" id="search-input" placeholder="Sök: Titel, författare, ISBN..." class="search-field">
                 <button id="search-btn" class="btn btn-primary">Sök</button>
                 <input type="text" id="category-input" placeholder="Kategori/SAB-kod" class="search-field category-field">
                 <button id="category-btn" class="btn btn-primary">Kategori</button>
                 <button id="show-all-btn" class="btn btn-secondary">Visa alla</button>
+            </div>
+            <div class="table-actions">
+                <button id="export-btn" class="btn btn-secondary">Exportera böcker</button>
             </div>
 
             <div class="book-count">
@@ -31,12 +33,14 @@
         <!-- Left sidebar - Add book form -->
         <aside class="sidebar">
             <div class="sidebar-card">
-                <h2 class="sidebar-title">Lägg till bok från Libris</h2>
+                <!-- <h2 class="sidebar-title">Lägg till bok från Libris</h2> -->
 
                 <!-- Libris search section -->
                 <div class="form-group">
-                    <input type="text" id="libris-search" placeholder="Sök på Libris (ISBN, titel, författare...)" class="form-input">
-                    <button id="libris-search-btn" class="btn btn-primary btn-full">Sök Libris</button>
+                    <div class="form-row">
+                        <input type="text" id="libris-search" placeholder="Sök på Libris (ISBN, titel, författare...)" class="form-input">
+                        <button id="libris-search-btn" class="btn btn-primary">Sök</button>
+                    </div>
                 </div>
 
                 <!-- Libris results (hidden by default) -->
@@ -57,23 +61,29 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="isbn-input" class="form-label">ISBN</label>
-                    <input type="text" id="isbn-input" class="form-input">
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="isbn-input" class="form-label">ISBN</label>
+                            <input type="text" id="isbn-input" class="form-input">
+                        </div>
+                        <div class="form-field">
+                            <label for="book-id-input" class="form-label">ID*</label>
+                            <input type="text" id="book-id-input" class="form-input">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="sab-input" class="form-label">SAB</label>
-                    <input type="text" id="sab-input" class="form-input">
-                </div>
-
-                <div class="form-group">
-                    <label for="shelf-input" class="form-label">Hylla</label>
-                    <input type="text" id="shelf-input" class="form-input">
-                </div>
-
-                <div class="form-group">
-                    <label for="book-id-input" class="form-label">ID*</label>
-                    <input type="text" id="book-id-input" class="form-input">
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="sab-input" class="form-label">SAB</label>
+                            <input type="text" id="sab-input" class="form-input">
+                        </div>
+                        <div class="form-field">
+                            <label for="shelf-input" class="form-label">Hylla</label>
+                            <input type="text" id="shelf-input" class="form-input">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -89,9 +99,6 @@
         <!-- Right content - Book table -->
         <main class="main-content">
             <div class="content-card">
-                <div class="table-actions">
-                    <button id="export-btn" class="btn btn-secondary">Exportera böcker</button>
-                </div>
 
                 <div class="table-container">
                     <table id="books-table" class="books-table">
