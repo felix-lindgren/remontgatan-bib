@@ -1,8 +1,8 @@
 // Configuration
-const API_BASE_URL = window.location.hostname === 'localhost'
+/* const API_BASE_URL = window.location.hostname === 'localhost'
     ? 'http://localhost:8000'
-    : window.API_BASE_URL || 'http://localhost:8000';
-//const API_BASE_URL = 'https://api-bibliotek.felix-lindgren.se';
+    : window.API_BASE_URL || 'http://localhost:8000'; */
+const API_BASE_URL = 'https://api-bibliotek.felix-lindgren.se';
 // State management
 let currentBooks = [];
 let librisResults = [];
