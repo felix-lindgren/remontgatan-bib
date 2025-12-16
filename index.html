@@ -198,6 +198,57 @@
         </div>
     </div>
 
+    <!-- Book details dialog -->
+    <div id="details-dialog" class="dialog-overlay" style="display: none;">
+        <div class="dialog dialog-large">
+            <h3 class="dialog-title">Bokdetaljer</h3>
+            <div class="dialog-content">
+                <div class="book-details">
+                    <div class="details-row">
+                        <span class="details-label">Titel:</span>
+                        <span id="details-title" class="details-value"></span>
+                    </div>
+                    <div class="details-row">
+                        <span class="details-label">Författare:</span>
+                        <span id="details-author" class="details-value"></span>
+                    </div>
+                    <div class="details-row">
+                        <span class="details-label">ISBN:</span>
+                        <span id="details-isbn" class="details-value"></span>
+                    </div>
+                    <div class="details-row">
+                        <span class="details-label">ID:</span>
+                        <span id="details-id" class="details-value"></span>
+                    </div>
+                    <div class="details-row">
+                        <span class="details-label">SAB-kod:</span>
+                        <span id="details-sab" class="details-value"></span>
+                    </div>
+                    <div class="details-row">
+                        <span class="details-label">Hylla:</span>
+                        <span id="details-shelf" class="details-value"></span>
+                    </div>
+                    <div class="details-row">
+                        <span class="details-label">Ämnesord:</span>
+                        <span id="details-subject" class="details-value details-subject"></span>
+                    </div>
+                    <div class="details-row">
+                        <span class="details-label">Kommentar:</span>
+                        <span id="details-other" class="details-value"></span>
+                    </div>
+                    <div class="details-row">
+                        <span class="details-label">Tillagd:</span>
+                        <span id="details-created" class="details-value"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-actions">
+                <a id="details-libris-link" href="#" target="_blank" class="btn btn-primary">Visa på Libris</a>
+                <button id="close-details-btn" class="btn btn-secondary">Stäng</button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

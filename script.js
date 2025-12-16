@@ -1,8 +1,7 @@
 // Configuration
-/* const API_BASE_URL = window.location.hostname === 'localhost'
+const API_BASE_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
     ? 'http://localhost:8000'
-    : window.API_BASE_URL || 'http://localhost:8000'; */
-const API_BASE_URL = 'https://api-bibliotek.felix-lindgren.se';
+    : 'https://api-bibliotek.felix-lindgren.se';
 // State management
 let currentBooks = [];
 let librisResults = [];
@@ -348,15 +347,38 @@ function renderBookTable() {
         const tr = document.createElement('tr');
         tr.dataset.bookId = book.id;
 
+        // Create title cell with cover preview if ISBN exists
+        let titleCell = '';
+        //console.log(book);
+        
+        console.log(book.isbn ,book.isbn !== 'Saknas');
+        
+        if (book.isbn && book.isbn !== 'Saknas') {
+            titleCell = `
+                <span class="title-with-cover">
+                    ${escapeHtml(book.title || '')} 
+                    <span class="cover-preview">
+                        <img src="https://covers.openlibrary.org/b/isbn/${escapeHtml(book.isbn)}-M.jpg"
+                             alt="Bokomslag"
+                             loading="lazy"
+                             onerror="this.parentElement.style.display='none'" />
+                    </span>
+                </span>
+            `;
+        } else {
+            titleCell = escapeHtml(book.title || '');
+        }
+
         tr.innerHTML = `
-            <td>${escapeHtml(book.title || '')}</td>
+            <td>${titleCell}</td>
             <td>${escapeHtml(book.author || '')}</td>
             <td>${escapeHtml(book.shelf || '')}</td>
             <td>${escapeHtml(book.other || '')}</td>
             <td class="actions-cell">
-                <button class="btn-icon btn-edit" onclick="openEditDialog('${escapeHtml(book.id)}')">✏️</button>
-                <button class="btn-icon btn-delete" onclick="openDeleteDialog('${escapeHtml(book.id)}')">🗑️</button>
-                <a href="http://libris.kb.se/bib/${escapeHtml(book.id)}" target="_blank" class="btn-icon">🔗</a>
+                <button class="btn-icon btn-view" onclick="openDetailsDialog('${escapeHtml(book.id)}')" title="Visa detaljer">🔍</button>
+                <button class="btn-icon btn-edit" onclick="openEditDialog('${escapeHtml(book.id)}')" title="Redigera">✏️</button>
+                <button class="btn-icon btn-delete" onclick="openDeleteDialog('${escapeHtml(book.id)}')" title="Ta bort">🗑️</button>
+                <a href="http://libris.kb.se/bib/${escapeHtml(book.id)}" target="_blank" class="btn-icon" title="Öppna på Libris">🔗</a>
             </td>
         `;
 
@@ -466,6 +488,47 @@ function openDeleteDialog(bookId) {
         `${book.title} av ${book.author}`;
 
     showDialog('delete-dialog');
+}
+
+async function openDetailsDialog(bookId) {
+    try {
+        showLoading('Hämtar bokdetaljer...');
+        const response = await apiFetch(`${API_BASE_URL}/api/books/${encodeURIComponent(bookId)}`);
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch book details');
+        }
+
+        const book = await response.json();
+        hideLoading();
+
+        // Populate the details dialog
+        document.getElementById('details-title').textContent = book.title || '-';
+        document.getElementById('details-author').textContent = book.author || '-';
+        document.getElementById('details-isbn').textContent = book.isbn || '-';
+        document.getElementById('details-id').textContent = book.id || '-';
+        document.getElementById('details-sab').textContent = book.sab || '-';
+        document.getElementById('details-shelf').textContent = book.shelf || '-';
+        document.getElementById('details-subject').textContent = book.subject || '-';
+        document.getElementById('details-other').textContent = book.other || '-';
+
+        // Format created_at timestamp
+        if (book.created_at) {
+            const date = new Date(book.created_at * 1000);
+            document.getElementById('details-created').textContent = date.toLocaleString('sv-SE');
+        } else {
+            document.getElementById('details-created').textContent = '-';
+        }
+
+        // Set Libris link
+        document.getElementById('details-libris-link').href = `http://libris.kb.se/bib/${book.id}`;
+
+        showDialog('details-dialog');
+    } catch (error) {
+        console.error('Error fetching book details:', error);
+        hideLoading();
+        showNotification('Kunde inte hämta bokdetaljer', 'error');
+    }
 }
 
 function downloadTextFile(filename, content) {
@@ -665,6 +728,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('close-export-btn').addEventListener('click', () => {
         hideDialog('export-dialog');
+    });
+
+    // Details dialog close button
+    document.getElementById('close-details-btn').addEventListener('click', () => {
+        hideDialog('details-dialog');
     });
 
     // Close dialogs on overlay click
